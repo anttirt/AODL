@@ -307,39 +307,41 @@ namespace AODL.Document.Import.OpenDocument
 				{
 					Directory.CreateDirectory(OpenDocumentImporter.dir);
 				}
-				ZipInputStream zipInputStream = new ZipInputStream(File.OpenRead(file));
-				while (true)
+				using(var stream = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+				using(ZipInputStream zipInputStream = new ZipInputStream(stream))
 				{
-					ZipEntry nextEntry = zipInputStream.GetNextEntry();
-					ZipEntry zipEntry = nextEntry;
-					if (nextEntry == null)
+					while(true)
 					{
-						break;
-					}
-					string directoryName = Path.GetDirectoryName(zipEntry.Name);
-					string fileName = Path.GetFileName(zipEntry.Name);
-					if (directoryName != string.Empty)
-					{
-						Directory.CreateDirectory(string.Concat(OpenDocumentImporter.dir, directoryName));
-					}
-					if (fileName != string.Empty)
-					{
-						FileStream fileStream = File.Create(string.Concat(OpenDocumentImporter.dir, zipEntry.Name));
-						int num = 2048;
-						byte[] numArray = new byte[2048];
-						while (true)
+						ZipEntry nextEntry = zipInputStream.GetNextEntry();
+						ZipEntry zipEntry = nextEntry;
+						if(nextEntry == null)
 						{
-							num = zipInputStream.Read(numArray, 0, (int)numArray.Length);
-							if (num <= 0)
-							{
-								break;
-							}
-							fileStream.Write(numArray, 0, num);
+							break;
 						}
-						fileStream.Close();
+						string directoryName = Path.GetDirectoryName(zipEntry.Name);
+						string fileName = Path.GetFileName(zipEntry.Name);
+						if(directoryName != string.Empty)
+						{
+							Directory.CreateDirectory(string.Concat(OpenDocumentImporter.dir, directoryName));
+						}
+						if(fileName != string.Empty)
+						{
+							FileStream fileStream = File.Create(string.Concat(OpenDocumentImporter.dir, zipEntry.Name));
+							int num = 2048;
+							byte[] numArray = new byte[2048];
+							while(true)
+							{
+								num = zipInputStream.Read(numArray, 0, (int)numArray.Length);
+								if(num <= 0)
+								{
+									break;
+								}
+								fileStream.Write(numArray, 0, num);
+							}
+							fileStream.Close();
+						}
 					}
 				}
-				zipInputStream.Close();
 				this.MovePictures();
 				this.ReadResources();
 			}
