@@ -5,7 +5,11 @@ using AODL.Document.Import;
 using AODL.Document.Import.OpenDocument.NodeProcessors;
 using AODL.Document.SpreadsheetDocuments;
 using AODL.Document.TextDocuments;
+#if UNITY_6000_0_OR_NEWER
+using Unity.SharpZipLib.Zip;
+#else
 using ICSharpCode.SharpZipLib.Zip;
+#endif
 using System;
 using System.Collections;
 using System.IO;
@@ -81,8 +85,13 @@ namespace AODL.Document.Import.OpenDocument
 
 		static OpenDocumentImporter()
 		{
+#if UNITY_6000_0_OR_NEWER
+			OpenDocumentImporter.dir = Path.Combine(Environment.CurrentDirectory, "Library", "aodlread") + "/";
+			OpenDocumentImporter.dirpics = Path.Combine(Environment.CurrentDirectory, "Library", "aodlPicturesRead") + "/";
+#else
 			OpenDocumentImporter.dir = string.Concat(Environment.CurrentDirectory, "\\aodlread\\");
 			OpenDocumentImporter.dirpics = string.Concat(Environment.CurrentDirectory, "\\PicturesRead\\");
+#endif
 		}
 
 		public OpenDocumentImporter()

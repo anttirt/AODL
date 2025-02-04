@@ -390,6 +390,7 @@ namespace AODL.Document.Content.Draw
 			string name;
 			try
 			{
+#if !UNITY_6000_0_OR_NEWER
 				double num = 37.7928;
 				Image image = Image.FromFile(graphicfilename);
 				double num1 = Convert.ToDouble(image.Height) / num;
@@ -397,6 +398,7 @@ namespace AODL.Document.Content.Draw
 				this.SvgHeight = string.Concat(num1.ToString("F3").Replace(",", "."), "cm");
 				this.SvgWidth = string.Concat(num2.ToString("F3").Replace(",", "."), "cm");
 				image.Dispose();
+#endif
 				name = (new FileInfo(graphicfilename)).Name;
 			}
 			catch (Exception exception)

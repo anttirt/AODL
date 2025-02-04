@@ -5,7 +5,11 @@ using AODL.Document.Export;
 using AODL.Document.Import.OpenDocument;
 using AODL.Document.SpreadsheetDocuments;
 using AODL.Document.TextDocuments;
+#if UNITY_6000_0_OR_NEWER
+using Unity.SharpZipLib.Zip;
+#else
 using ICSharpCode.SharpZipLib.Zip;
+#endif
 using System;
 using System.Collections;
 using System.Diagnostics;
@@ -224,6 +228,7 @@ namespace AODL.Document.Export.OpenDocument
 			}
 		}
 
+#if !UNITY_6000_0_OR_NEWER
 		private void SaveExistingGraphics(DocumentPictureCollection pictures, string folder)
 		{
 			try
@@ -242,6 +247,7 @@ namespace AODL.Document.Export.OpenDocument
 				throw;
 			}
 		}
+#endif
 
 		internal static void SaveGraphic(IDocument document, string directory)
 		{

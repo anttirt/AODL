@@ -395,60 +395,50 @@ namespace AODL.Document.SpreadsheetDocuments
 
         public void Load(string file)
         {
-            try
+            this._isLoadedFile = true;
+            this.LoadBlankContent();
+            this.NamespaceManager = TextDocumentHelper.NameSpace(this._xmldoc.NameTable);
+            IImporter firstImporter = (new ImportHandler()).GetFirstImporter(DocumentTypes.SpreadsheetDocument, file);
+            if (firstImporter != null)
             {
-                this._isLoadedFile = true;
-                this.LoadBlankContent();
-                this.NamespaceManager = TextDocumentHelper.NameSpace(this._xmldoc.NameTable);
-                IImporter firstImporter = (new ImportHandler()).GetFirstImporter(DocumentTypes.SpreadsheetDocument, file);
-                if (firstImporter != null)
+                if (firstImporter.NeedNewOpenDocument)
                 {
-                    if (firstImporter.NeedNewOpenDocument)
+                    this.New();
+                }
+                firstImporter.Import(this, file);
+                if (firstImporter.ImportError != null && firstImporter.ImportError.Count > 0)
+                {
+                    foreach (object importError in firstImporter.ImportError)
                     {
-                        this.New();
-                    }
-                    firstImporter.Import(this, file);
-                    if (firstImporter.ImportError != null && firstImporter.ImportError.Count > 0)
-                    {
-                        foreach (object importError in firstImporter.ImportError)
+                        if (!(importError is AODLWarning))
                         {
-                            if (!(importError is AODLWarning))
-                            {
-                                continue;
-                            }
-                            if (((AODLWarning)importError).Message != null)
-                            {
-                                Console.WriteLine("Err: {0}", ((AODLWarning)importError).Message);
-                            }
-                            if (((AODLWarning)importError).Node == null)
-                            {
-                                continue;
-                            }
-                            XmlTextWriter xmlTextWriter = new XmlTextWriter(Console.Out);
-                            xmlTextWriter.Formatting = Formatting.Indented;
-                            ((AODLWarning)importError).Node.WriteContentTo(xmlTextWriter);
+                            continue;
                         }
+                        if (((AODLWarning)importError).Message != null)
+                        {
+                            Console.WriteLine("Err: {0}", ((AODLWarning)importError).Message);
+                        }
+                        if (((AODLWarning)importError).Node == null)
+                        {
+                            continue;
+                        }
+                        XmlTextWriter xmlTextWriter = new XmlTextWriter(Console.Out);
+                        xmlTextWriter.Formatting = Formatting.Indented;
+                        ((AODLWarning)importError).Node.WriteContentTo(xmlTextWriter);
                     }
                 }
-            }
-            catch (Exception exception)
-            {
-                throw;
             }
         }
 
         private void LoadBlankContent()
         {
-            try
-            {
-                Stream manifestResourceStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("AODL.Resources.OD.spreadsheetcontent.xml");
-                this._xmldoc = new XmlDocument();
-                this._xmldoc.Load(manifestResourceStream);
-            }
-            catch (Exception exception)
-            {
-                throw;
-            }
+#if UNITY_6000_0_OR_NEWER
+            Stream manifestResourceStream = File.OpenRead(Path.GetFullPath("Packages/org.odftoolkit.aodl/AODL.Resources.OD.spreadsheetcontent.xml"));
+#else
+            Stream manifestResourceStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("AODL.Resources.OD.spreadsheetcontent.xml");
+#endif
+            this._xmldoc = new XmlDocument();
+            this._xmldoc.Load(manifestResourceStream);
         }
 
         public void New()

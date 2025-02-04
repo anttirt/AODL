@@ -1,17 +1,22 @@
 using System;
+#if !UNITY_6000_0_OR_NEWER
 using System.Drawing;
+#endif
 using System.IO;
 
 namespace AODL.Document.TextDocuments
 {
 	public class DocumentPicture
 	{
+#if !UNITY_6000_0_OR_NEWER
 		private System.Drawing.Image _image;
+#endif
 
 		private string _imageName;
 
 		private string _imagePath;
 
+#if !UNITY_6000_0_OR_NEWER
 		public System.Drawing.Image Image
 		{
 			get
@@ -23,6 +28,7 @@ namespace AODL.Document.TextDocuments
 				this._image = value;
 			}
 		}
+#endif
 
 		public string ImageName
 		{
