@@ -36,6 +36,19 @@ namespace AODL.Document.Content.Tables
 			}
 		}
 
+		public int NumberColumnsRepeated
+		{
+			get
+			{
+				XmlNode xmlNode = this._node.SelectSingleNode("@table:number-columns-repeated", this.Document.NamespaceManager);
+				if(xmlNode == null)
+					return 1;
+				if(!int.TryParse(xmlNode.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out int result))
+					return 1;
+				return result;
+			}
+		}
+
 		public string ColumnRepeating
 		{
 			get
